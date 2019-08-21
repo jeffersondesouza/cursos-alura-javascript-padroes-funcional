@@ -7,6 +7,7 @@ import {
 } from "./utils/operators.js";
 
 import "./utils/array-helpers.js";
+import { timeoutPromise, retry } from "./utils/promise-helpers.js";
 
 const operations = pipe(
   partialize(takeUntil, 3),
@@ -14,8 +15,7 @@ const operations = pipe(
 );
 
 const operation = operations(() =>
-  service
-    .sumItemsByCode("2143")
+  retry(3, 1000, () => timeoutPromise(1000, service.sumItemsByCode("2143")))
     .then(console.log)
     .catch(console.log)
 );
