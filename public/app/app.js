@@ -8,16 +8,22 @@ import {
 
 import "./utils/array-helpers.js";
 import { timeoutPromise, retry } from "./utils/promise-helpers.js";
+import { EventEmmiter } from "./utils/event-emmiter.js";
 
 const operations = pipe(
   partialize(takeUntil, 3),
   partialize(debounceTime, 500)
 );
 
-const operation = operations(() =>
+const action = operations(() =>
   retry(3, 1000, () => timeoutPromise(1000, service.sumItemsByCode("2143")))
-    .then(console.log)
+    .then(total => {
+      console.log("total: ", total);
+      EventEmmiter.emit("itensTotalizados", total);
+    })
     .catch(console.log)
 );
 
-document.querySelector("#myButton").onclick = operation;
+document.querySelector("#myButton").onclick = action;
+
+EventEmmiter.on("itensTotalizados", total => alert(total));
