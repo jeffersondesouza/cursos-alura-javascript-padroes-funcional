@@ -17,13 +17,8 @@ const operations = pipe(
 
 const action = operations(() =>
   retry(3, 1000, () => timeoutPromise(1000, service.sumItemsByCode("2143")))
-    .then(total => {
-      console.log("total: ", total);
-      EventEmmiter.emit("itensTotalizados", total);
-    })
+    .then(total => EventEmmiter.emit("itensTotalizados", total))
     .catch(console.log)
 );
 
 document.querySelector("#myButton").onclick = action;
-
-EventEmmiter.on("itensTotalizados", total => alert(total));
